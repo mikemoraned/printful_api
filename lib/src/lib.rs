@@ -2,6 +2,7 @@ use reqwest::header::HeaderValue;
 use reqwest::header::AUTHORIZATION;
 use reqwest::Error;
 use async_trait::async_trait;
+use openapiv3::OpenAPI;
 
 #[async_trait]
 pub trait PrintfulAPI {
@@ -50,4 +51,27 @@ pub struct Store {
 struct PrintfulResponse<R> {
     code: u16,
     result: R,
+}
+
+
+pub struct PrintfulOpenAPI {
+    api_key: String,
+    api: OpenAPI
+}
+
+#[async_trait]
+impl PrintfulAPI for PrintfulOpenAPI {
+    fn new(api_key: String) -> Self {
+        let data = include_str!("openapi.json");
+        let api: OpenAPI = serde_json::from_str(data).expect("Could not deserialize input");
+        println!("OpenAPI: {:?}", api);
+        PrintfulOpenAPI { api_key, api }
+    }
+
+    async fn get_store(self: &Self) -> Result<Store, Error> {
+        Ok(Store {
+            id: 1,
+            name: "dummy".into()
+        })
+    }
 }
