@@ -2,6 +2,7 @@ extern crate reqwest;
 
 use dotenv;
 use printful_lib::Printful;
+use printful_lib::PrintfulAPI;
 
 use reqwest::Error;
 

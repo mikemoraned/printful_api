@@ -1,17 +1,25 @@
 use reqwest::header::HeaderValue;
 use reqwest::header::AUTHORIZATION;
 use reqwest::Error;
+use async_trait::async_trait;
+
+#[async_trait]
+pub trait PrintfulAPI {
+    fn new(api_key: String) -> Self;
+    async fn get_store(self: &Self) -> Result<Store, Error>;
+}
 
 pub struct Printful {
     api_key: String,
 }
 
-impl Printful {
-    pub fn new(api_key: String) -> Self {
+#[async_trait]
+impl PrintfulAPI for Printful {
+    fn new(api_key: String) -> Self {
         Printful { api_key }
     }
 
-    pub async fn get_store(self: &Self) -> Result<Store, Error> {
+    async fn get_store(self: &Self) -> Result<Store, Error> {
         let client = reqwest::Client::new();
         let res = client
             .get("https://api.printful.com/store")
